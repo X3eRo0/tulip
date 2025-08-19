@@ -43,6 +43,7 @@ def get_user_input():
 def create_env_file(config):
     env_content = f"""##############################
 # Tulip config
+TIMESCALE="postgres://tulip@timescale:5432/tulip"
 
 # The location of your pcaps as seen by the host - Update to your actual pcap directory
 TRAFFIC_DIR_HOST="{config['pcap_dir']}"
