@@ -10,77 +10,39 @@ import subprocess
 from datetime import datetime
 import re
 
+
 def get_user_input():
-    """Gather CTF configuration from user"""
-    print("=== Tulip CTF Configuration Setup ===")
-    print()
-    
-    # Team configuration
-    team_ip = input("Enter your team IP (e.g., 10.10.3.1): ").strip()
-    if not re.match(r'^(\d{1,3}\.){3}\d{1,3}$', team_ip):
+    team_ip = input("Enter your team IP (e.g., 10.32.1.2): ").strip()
+    if not re.match(r"^(\d{1,3}\.){3}\d{1,3}$", team_ip):
         print("Invalid IP format. Please try again.")
         sys.exit(1)
-    
+
     team_id = input("Enter your team ID: ").strip()
-    
-    # Database configuration
-    print("\n--- Database Configuration ---")
-    db_user = input("Database username [tulip_user]: ").strip() or "tulip_user"
-    db_password = input("Database password [your_password]: ").strip() or "your_password"
-    db_host = input("Database host [timescale]: ").strip() or "timescale"
-    db_port = input("Database port [5432]: ").strip() or "5432"
-    db_name = input("Database name [tulip_db]: ").strip() or "tulip_db"
-    
-    # Game configuration
-    print("\n--- Game Configuration ---")
-    tick_start = input("CTF start time (ISO 8601, e.g., 2025-08-23T13:00:00Z): ").strip()
-    if not tick_start:
-        tick_start = "2025-08-23T13:00:00Z"
-    
-    tick_length = input("Tick length in ms [120000 = 2 minutes]: ").strip() or "120000"
-    
-    flag_regex = input("Flag regex [FLAG_[A-Za-z0-9/+]{32}]: ").strip() or "FLAG_[A-Za-z0-9/+]{32}"
-    
-    flag_lifetime = input("Flag lifetime in ticks [2]: ").strip() or "2"
-    
-    # Optional configurations
-    print("\n--- Optional Configurations ---")
-    pcap_dir = input("PCAP directory [./pcaps]: ").strip() or "./pcaps"
-    
-    visualizer_url = input("Visualizer URL [http://localhost:3000/]: ").strip() or "http://localhost:3000/"
-    
-    flagid_endpoint = input("Flag ID endpoint [https://x3ero0.dev/competition/teams.json]: ").strip() or "https://x3ero0.dev/competition/teams.json"
-    
-    flag_validator = input("Flag validator type (faust/enowars/eno/itad) [faust]: ").strip() or "faust"
-    
-    validator_team = input("Flag validator team number [42]: ").strip() or "42"
-    
+    tick_start = "2025-08-23T19:00:00+00:00"
+    tick_length = "120000"
+    flag_regex = "FLAG_[A-Za-z0-9/+]{32}"
+    flag_lifetime = "5"
+    pcap_dir = "./pcaps"
+    visualizer_url = "http://localhost:1111/"
+    flagid_endpoint = "https://x3ero0.dev/competition/teams.json"
+    flag_validator = "faust"
     return {
-        'team_ip': team_ip,
-        'team_id': team_id,
-        'db_user': db_user,
-        'db_password': db_password,
-        'db_host': db_host,
-        'db_port': db_port,
-        'db_name': db_name,
-        'tick_start': tick_start,
-        'tick_length': tick_length,
-        'flag_regex': flag_regex,
-        'flag_lifetime': flag_lifetime,
-        'pcap_dir': pcap_dir,
-        'visualizer_url': visualizer_url,
-        'flagid_endpoint': flagid_endpoint,
-        'flag_validator': flag_validator,
-        'validator_team': validator_team
+        "team_ip": team_ip,
+        "team_id": team_id,
+        "tick_start": tick_start,
+        "tick_length": tick_length,
+        "flag_regex": flag_regex,
+        "flag_lifetime": flag_lifetime,
+        "pcap_dir": pcap_dir,
+        "visualizer_url": visualizer_url,
+        "flagid_endpoint": flagid_endpoint,
+        "flag_validator": flag_validator,
     }
 
+
 def create_env_file(config):
-    """Create .env file with configuration"""
     env_content = f"""##############################
 # Tulip config
-##############################
-# Timescale connection - Update with your actual database credentials
-TIMESCALE="postgres://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}"
 
 # The location of your pcaps as seen by the host - Update to your actual pcap directory
 TRAFFIC_DIR_HOST="{config['pcap_dir']}"
@@ -156,78 +118,63 @@ FLAGID_ENDPOINT="{config['flagid_endpoint']}"
 # Flag validation system - Choose: faust, enowars, eno, itad
 # Uncomment and set based on your CTF platform
 FLAG_VALIDATOR_TYPE={config['flag_validator']}
-#FLAG_VALIDATOR_TYPE="enowars"
-
-# Your team number for flag validation
-FLAG_VALIDATOR_TEAM={config['validator_team']}
 """
-    
-    with open('.env', 'w') as f:
+
+    with open(".env", "w") as f:
         f.write(env_content)
 
+
 def update_configurations_py(team_ip):
-    """Update services/api/configurations.py with team IP"""
-    config_file = 'services/api/configurations.py'
-    
-    # Read current file
-    with open(config_file, 'r') as f:
+    config_file = "services/api/configurations.py"
+
+    with open(config_file, "r") as f:
         content = f.read()
-    
-    # Update vm_ip line
+
     content = re.sub(
         r'vm_ip = os\.getenv\("VM_IP", "[^"]*"\)',
         f'vm_ip = os.getenv("VM_IP", "{team_ip}")',
-        content
+        content,
     )
-    
-    # Write back to file
-    with open(config_file, 'w') as f:
+
+    with open(config_file, "w") as f:
         f.write(content)
 
+
 def main():
-    """Main configuration function"""
     try:
-        # Get configuration from user
         config = get_user_input()
-        
+
         print(f"\n=== Configuration Summary ===")
         print(f"Team IP: {config['team_ip']}")
         print(f"Team ID: {config['team_id']}")
-        print(f"Database: {config['db_user']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
         print(f"CTF Start: {config['tick_start']}")
         print(f"Tick Length: {config['tick_length']}ms")
         print(f"Flag Regex: {config['flag_regex']}")
-        
+
         confirm = input("\nProceed with this configuration? (y/N): ").strip().lower()
-        if confirm != 'y':
+        if confirm != "y":
             print("Configuration cancelled.")
             sys.exit(0)
-        
-        # Create .env file
-        print("\n=== Setting up .env file ===")
+
         create_env_file(config)
-        print("✓ .env file created successfully")
-        
-        # Create pcap directory if it doesn't exist
-        if not os.path.exists(config['pcap_dir']):
-            os.makedirs(config['pcap_dir'], exist_ok=True)
-            print(f"✓ Created pcap directory: {config['pcap_dir']}")
-        
-        # Update configuration.py
-        print("\n=== Setting up configuration.py ===")
-        update_configurations_py(config['team_ip'])
-        print("✓ configuration.py updated successfully")
-        
+        print("[+] .env file created successfully")
+        if not os.path.exists(config["pcap_dir"]):
+            os.makedirs(config["pcap_dir"], exist_ok=True)
+            print(f"[+] Created pcap directory: {config['pcap_dir']}")
+        update_configurations_py(config["team_ip"])
+        print("[+] configuration.py updated successfully")
+
         print("\n=== Setup Complete ===")
         print("Your Tulip CTF environment is now configured!")
-        print("You can start the services with: docker-compose up -d")
-        
+        print("You can start the services with: ./start_capture.sh && ./start_tulip.sh")
+
     except KeyboardInterrupt:
         print("\n\nConfiguration cancelled by user.")
         sys.exit(0)
     except Exception as e:
         print(f"\nError during configuration: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

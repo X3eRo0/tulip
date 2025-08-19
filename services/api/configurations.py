@@ -27,7 +27,7 @@ from pathlib import Path
 
 traffic_dir = Path(os.getenv("TULIP_TRAFFIC_DIR", "/traffic"))
 dump_pcaps_dir = Path(os.getenv("DUMP_PCAPS", "/traffic"))
-tick_length = os.getenv("TICK_LENGTH", 2*60*1000)
+tick_length = os.getenv("TICK_LENGTH", 2 * 60 * 1000)
 flag_lifetime = os.getenv("FLAG_LIFETIME", 5)
 start_date = os.getenv("TICK_START", "2018-06-27T13:00:00+02:00")
 flag_regex = os.getenv("FLAG_REGEX", "[A-Z0-9]{31}=")
@@ -35,16 +35,13 @@ vm_ip = os.getenv("VM_IP", "10.10.3.1")
 visualizer_url = os.getenv("VISUALIZER_URL", "http://127.0.0.1:1337")
 
 vm_ip_1 = "10.60.2.1"
-helper = '''
-10.61.5.1:1237 CyberUni 4
-10.61.5.1:1236 CyberUni 3
-10.61.5.1:1235 CyberUni 1
-10.61.5.1:1234 CyberUni 2
-10.60.5.1:3003 ClosedSea 1
-10.60.5.1:3004 ClosedSea 2
-10.62.5.1:5000 Trademark
-10.63.5.1:1337 RPN
-'''
 
-services = [{"ip": x.split(" ")[0].split(":")[0], "port": int(x.split(" ")[0].split(":")[1]), "name": " ".join(x.split(" ")[1:])} for x in helper.strip().split("\n")]
-services += [{"ip": vm_ip_1, "port": -1, "name": "other"}]
+helper = """
+Cowsay 5000
+"""
+
+for line in helper.split("\n"):
+    if len(line) == 0:
+        continue
+    name, port = line.split()
+    services = [{"ip": vm_ip_1, "port": int(port), "name": name}]
