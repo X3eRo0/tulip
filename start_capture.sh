@@ -45,15 +45,12 @@ mkdir -p "$CAPTURE_DIR"
 
 echo "[+] Starting tcpdump on interface: $INTERFACE"
 echo "[+] Capture directory: $CAPTURE_DIR"
-echo "[+] Files will rotate every hour"
+echo "[+] Files will rotate every tick"
 
 nohup tcpdump -i "$INTERFACE" -w "$CAPTURE_DIR/capture-%Y%m%d-%H%M%S.pcap" -G 3600 >/tmp/tulip_tcpdump.log 2>&1 &
 TCPDUMP_PID=$!
 
-# Save PID
 echo "$TCPDUMP_PID" >"$PID_FILE"
-
-# Wait a moment and check if it's still running
 sleep 2
 if kill -0 "$TCPDUMP_PID" 2>/dev/null; then
     echo "[+] Packet capture started successfully (PID: $TCPDUMP_PID)"
