@@ -22,7 +22,7 @@ def get_user_input():
     tick_length = "240000"
     flag_regex = "FLAG_[A-Za-z0-9+]{32}"
     flag_lifetime = "5"
-    pcap_dir = "./pcaps"
+    pcap_dir = "/tmp/pcaps"
     visualizer_url = "http://localhost:1111/"
     flagid_endpoint = "https://x3ero0.dev/competition/teams.json"
     flag_validator = "faust"
