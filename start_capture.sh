@@ -47,7 +47,7 @@ echo "[+] Starting tcpdump on interface: $INTERFACE"
 echo "[+] Capture directory: $CAPTURE_DIR"
 echo "[+] Files will rotate every tick"
 
-nohup tcpdump -i "$INTERFACE" -w "$CAPTURE_DIR/capture-%Y%m%d-%H%M%S.pcap" -G 120 >/tmp/tulip_tcpdump.log 2>&1 &
+nohup tcpdump -i "$INTERFACE" 'port 7777 or port 3333 or port 6969 or port 2750' -w "$CAPTURE_DIR/capture-%Y%m%d-%H%M%S.pcap" -G 240 >/tmp/tulip_tcpdump.log 2>&1 &
 TCPDUMP_PID=$!
 
 echo "$TCPDUMP_PID" >"$PID_FILE"

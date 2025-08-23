@@ -19,8 +19,8 @@ def get_user_input():
 
     team_id = input("Enter your team ID: ").strip()
     tick_start = "2025-08-23T19:00:00+00:00"
-    tick_length = "120000"
-    flag_regex = "FLAG_[A-Za-z0-9/+]{32}"
+    tick_length = "240000"
+    flag_regex = "FLAG_[A-Za-z0-9+]{32}"
     flag_lifetime = "5"
     pcap_dir = "./pcaps"
     visualizer_url = "http://localhost:1111/"

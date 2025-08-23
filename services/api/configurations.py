@@ -34,14 +34,15 @@ flag_regex = os.getenv("FLAG_REGEX", "[A-Z0-9]{31}=")
 vm_ip = os.getenv("VM_IP", "10.10.3.1")
 visualizer_url = os.getenv("VISUALIZER_URL", "http://127.0.0.1:1337")
 
-vm_ip_1 = "10.60.2.1"
-
 helper = """
-Cowsay 5000
+blastpass 3333
+xvm-computing 7777
+academy-gram 2750
+academy-bank 6969
 """
 
 for line in helper.split("\n"):
     if len(line) == 0:
         continue
     name, port = line.split()
-    services = [{"ip": vm_ip_1, "port": int(port), "name": name}]
+    services = [{"ip": vm_ip, "port": int(port), "name": name}]
