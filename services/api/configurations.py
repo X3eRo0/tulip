@@ -41,8 +41,9 @@ academy-gram 2750
 academy-bank 6969
 """
 
+services = []
 for line in helper.split("\n"):
     if len(line) == 0:
         continue
     name, port = line.split()
-    services = [{"ip": vm_ip, "port": int(port), "name": name}]
+    services += [{"ip": vm_ip, "port": int(port), "name": name}]
